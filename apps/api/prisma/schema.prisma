@@ -230,6 +230,7 @@ model User {
   // Password reset
   passwordResetToken       String?
   passwordResetExpires     DateTime?
+  passwordChangedAt        DateTime?
 
   // Session management
   lastLoginAt              DateTime?
