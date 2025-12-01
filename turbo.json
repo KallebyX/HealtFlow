@@ -1,0 +1,30 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [".env"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "build/**"],
+      "env": ["NODE_ENV", "DATABASE_URL", "REDIS_URL"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "outputs": []
+    },
+    "type-check": {
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["build"],
+      "outputs": ["coverage/**"],
+      "env": ["NODE_ENV", "DATABASE_URL"]
+    },
+    "test:e2e": {
+      "dependsOn": ["build"],
+      "outputs": ["playwright-report/**"]
+    }
+  }
+}
