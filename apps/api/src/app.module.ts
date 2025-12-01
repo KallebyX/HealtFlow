@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { BullModule } from '@nestjs/bull';
@@ -8,21 +9,20 @@ import { BullModule } from '@nestjs/bull';
 // Database
 import { PrismaModule } from './database/prisma.module';
 
-// Common
-// import { CacheModule } from './common/cache/cache.module';
-// import { AuditModule } from './common/audit/audit.module';
+// Auth Module
+import { AuthModule } from './modules/auth/auth.module';
+import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
-// Feature Modules (will be uncommented as implemented)
-// import { AuthModule } from './modules/auth/auth.module';
-// import { PatientsModule } from './modules/patients/patients.module';
-// import { DoctorsModule } from './modules/doctors/doctors.module';
-// import { ClinicsModule } from './modules/clinics/clinics.module';
-// import { AppointmentsModule } from './modules/appointments/appointments.module';
-// import { ConsultationsModule } from './modules/consultations/consultations.module';
-// import { PrescriptionsModule } from './modules/prescriptions/prescriptions.module';
-// import { LaboratoryModule } from './modules/laboratory/laboratory.module';
-// import { TelemedicineModule } from './modules/telemedicine/telemedicine.module';
-// import { GamificationModule } from './modules/gamification/gamification.module';
+// Feature Modules
+import { PatientsModule } from './modules/patients/patients.module';
+import { DoctorsModule } from './modules/doctors/doctors.module';
+import { ClinicsModule } from './modules/clinics/clinics.module';
+import { AppointmentsModule } from './modules/appointments/appointments.module';
+import { ConsultationsModule } from './modules/consultations/consultations.module';
+import { PrescriptionsModule } from './modules/prescriptions/prescriptions.module';
+import { LaboratoryModule } from './modules/laboratory/laboratory.module';
+import { TelemedicineModule } from './modules/telemedicine/telemedicine.module';
+import { GamificationModule } from './modules/gamification/gamification.module';
 // import { BillingModule } from './modules/billing/billing.module';
 // import { NotificationsModule } from './modules/notifications/notifications.module';
 // import { AnalyticsModule } from './modules/analytics/analytics.module';
@@ -90,29 +90,39 @@ import { PrismaModule } from './database/prisma.module';
     // Database
     PrismaModule,
 
-    // Common modules (to be added)
-    // CacheModule,
-    // AuditModule,
+    // Auth Module
+    AuthModule,
 
-    // Feature modules (to be added)
-    // AuthModule,
-    // PatientsModule,
-    // DoctorsModule,
-    // ClinicsModule,
-    // AppointmentsModule,
-    // ConsultationsModule,
-    // PrescriptionsModule,
-    // LaboratoryModule,
-    // TelemedicineModule,
-    // GamificationModule,
+    // Feature modules
+    PatientsModule,
+    DoctorsModule,
+    ClinicsModule,
+    AppointmentsModule,
+    ConsultationsModule,
+    PrescriptionsModule,
+    LaboratoryModule,
+    TelemedicineModule,
+    GamificationModule,
     // BillingModule,
     // NotificationsModule,
     // AnalyticsModule,
 
-    // Integration modules (to be added)
+    // Integration modules
     // FhirModule,
     // RndsModule,
     // StorageModule,
+  ],
+  providers: [
+    // Global JWT Auth Guard
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    // Global Throttler Guard
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}
