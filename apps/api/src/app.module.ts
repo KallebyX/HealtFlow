@@ -25,7 +25,7 @@ import { TelemedicineModule } from './modules/telemedicine/telemedicine.module';
 import { GamificationModule } from './modules/gamification/gamification.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
-// import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 
 // Integration Modules
 // import { FhirModule } from './modules/integrations/fhir/fhir.module';
@@ -105,7 +105,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     GamificationModule,
     BillingModule,
     NotificationsModule,
-    // AnalyticsModule,
+    AnalyticsModule,
 
     // Integration modules
     // FhirModule,
