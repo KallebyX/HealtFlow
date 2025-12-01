@@ -29,8 +29,8 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 
 // Integration Modules
 import { FhirModule } from './modules/integrations/fhir/fhir.module';
-// import { RndsModule } from './modules/integrations/rnds/rnds.module';
-// import { StorageModule } from './modules/integrations/storage/storage.module';
+import { RndsModule } from './modules/integrations/rnds/rnds.module';
+import { StorageModule } from './modules/integrations/storage/storage.module';
 
 @Module({
   imports: [
@@ -109,8 +109,8 @@ import { FhirModule } from './modules/integrations/fhir/fhir.module';
 
     // Integration modules
     FhirModule,
-    // RndsModule,
-    // StorageModule,
+    RndsModule,
+    StorageModule,
   ],
   providers: [
     // Global JWT Auth Guard
