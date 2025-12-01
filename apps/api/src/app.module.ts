@@ -23,8 +23,8 @@ import { PrescriptionsModule } from './modules/prescriptions/prescriptions.modul
 import { LaboratoryModule } from './modules/laboratory/laboratory.module';
 import { TelemedicineModule } from './modules/telemedicine/telemedicine.module';
 import { GamificationModule } from './modules/gamification/gamification.module';
-// import { BillingModule } from './modules/billing/billing.module';
-// import { NotificationsModule } from './modules/notifications/notifications.module';
+import { BillingModule } from './modules/billing/billing.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 // import { AnalyticsModule } from './modules/analytics/analytics.module';
 
 // Integration Modules
@@ -103,8 +103,8 @@ import { GamificationModule } from './modules/gamification/gamification.module';
     LaboratoryModule,
     TelemedicineModule,
     GamificationModule,
-    // BillingModule,
-    // NotificationsModule,
+    BillingModule,
+    NotificationsModule,
     // AnalyticsModule,
 
     // Integration modules
