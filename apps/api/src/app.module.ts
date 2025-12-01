@@ -28,7 +28,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 
 // Integration Modules
-// import { FhirModule } from './modules/integrations/fhir/fhir.module';
+import { FhirModule } from './modules/integrations/fhir/fhir.module';
 // import { RndsModule } from './modules/integrations/rnds/rnds.module';
 // import { StorageModule } from './modules/integrations/storage/storage.module';
 
@@ -108,7 +108,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
     AnalyticsModule,
 
     // Integration modules
-    // FhirModule,
+    FhirModule,
     // RndsModule,
     // StorageModule,
   ],
