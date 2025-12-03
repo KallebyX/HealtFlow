@@ -169,34 +169,34 @@
 - [x] Configurar App Router
 - [x] Setup TailwindCSS
 - [x] Instalar shadcn/ui
-- [ ] Configurar autenticação
+- [x] Configurar autenticação (NextAuth.js)
 
 ### 3.2 Layout e Navegação
 - [x] Layout responsivo Mobile First
 - [x] Sidebar/Menu adaptativo
 - [x] Header com user info
-- [ ] Breadcrumbs
+- [x] Breadcrumbs component
 - [x] Theme switcher (dark/light)
 
 ### 3.3 Páginas Públicas
-- [ ] Landing page
-- [ ] Login/Registro
-- [ ] Recuperação de senha
-- [ ] Termos e Privacidade
+- [x] Landing page
+- [x] Login/Registro
+- [x] Recuperação de senha (esqueci-senha, redefinir-senha)
+- [x] Termos e Privacidade
 
 ### 3.4 Dashboard
 - [x] Overview com métricas
-- [ ] Gráficos e estatísticas
+- [x] Gráficos e estatísticas (Recharts)
 - [x] Atividades recentes
 - [ ] Alertas e notificações
 
 ### 3.5 Módulos de Gestão
-- [ ] Lista e form de pacientes
-- [ ] Lista e form de médicos
-- [ ] Agenda de consultas
+- [x] Lista e form de pacientes
+- [x] Lista e form de médicos
+- [x] Agenda de consultas (day/week/list views)
 - [ ] Prontuário eletrônico
-- [ ] Prescrições
-- [ ] Exames laboratoriais
+- [x] Prescrições (lista, detalhes, nova prescricao)
+- [x] Exames laboratoriais (lista, detalhes)
 
 ### 3.6 Telemedicina
 - [ ] Sala de videochamada
@@ -272,15 +272,15 @@
 |------|--------|-----------|
 | FASE 1 - Foundation | ✅ Concluída | 100% |
 | FASE 2 - Backend API | ✅ Concluída | 100% |
-| FASE 3 - Frontend Web | ⏳ Em Progresso | 35% |
+| FASE 3 - Frontend Web | ⏳ Em Progresso | 80% |
 | FASE 4 - Mobile App | ⏳ Pendente | 0% |
 | FASE 5 - Infrastructure | ⏳ Parcial | 10% |
 
 **Total de arquivos TypeScript na API:** 161+
-**Total de linhas de código estimadas:** 55.000+
+**Total de linhas de código estimadas:** 65.000+
 **Models Prisma:** 50+
 **Endpoints REST:** 300+
-**Componentes UI:** 15+
+**Componentes UI:** 35+
 
 ---
 
