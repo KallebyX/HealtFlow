@@ -7,3 +7,4 @@ export * from './exam';
 export * from './notification';
 export * from './consultation';
 export * from './telemedicine';
+export * from './financial';
