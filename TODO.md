@@ -216,24 +216,25 @@
 ## FASE 4 - Mobile App (React Native + Expo) ⏳
 
 ### 4.1 Setup Base
-- [ ] Criar app Expo
-- [ ] Configurar navegação
-- [ ] Setup NativeWind
-- [ ] Configurar autenticação
+- [x] Criar app Expo (Expo 50 + Expo Router)
+- [x] Configurar navegação (Stack + Tabs)
+- [x] Setup NativeWind
+- [x] Configurar autenticação (AuthContext, AsyncStorage)
 
 ### 4.2 Telas do Paciente
-- [ ] Login/Registro
-- [ ] Perfil e dados pessoais
-- [ ] Meus agendamentos
-- [ ] Minhas consultas
-- [ ] Minhas prescrições
-- [ ] Meus exames
+- [x] Login/Registro (email, senha, CPF)
+- [x] Recuperação de senha
+- [x] Perfil e dados pessoais
+- [x] Home com resumo e acesso rápido
+- [x] Meus agendamentos (próximas, histórico)
+- [x] Minhas prescrições (lista, detalhes, PDF)
+- [x] Meus exames (status, resultados)
 
 ### 4.3 Gamificação
-- [ ] Perfil de gamificação
-- [ ] Badges conquistados
-- [ ] Desafios ativos
-- [ ] Ranking
+- [x] Perfil de gamificação (nível, XP, streak)
+- [x] Badges conquistados
+- [x] Desafios ativos
+- [x] Ranking
 
 ### 4.4 Telemedicina Mobile
 - [ ] Sala de videochamada
@@ -276,16 +277,17 @@
 | FASE 1 - Foundation | ✅ Concluída | 100% |
 | FASE 2 - Backend API | ✅ Concluída | 100% |
 | FASE 3 - Frontend Web | ✅ Concluída | 100% |
-| FASE 4 - Mobile App | ⏳ Pendente | 0% |
+| FASE 4 - Mobile App | ⏳ Em Progresso | 85% |
 | FASE 5 - Infrastructure | ⏳ Parcial | 10% |
 
 **Total de arquivos TypeScript na API:** 161+
-**Total de linhas de código estimadas:** 75.000+
+**Total de linhas de código estimadas:** 80.000+
 **Models Prisma:** 50+
 **Endpoints REST:** 300+
-**Componentes UI:** 55+
-**Páginas Frontend:** 30+
-**Tipos TypeScript Frontend:** 11 módulos
+**Componentes UI Web:** 55+
+**Páginas Frontend Web:** 30+
+**Telas Mobile:** 10+
+**Tipos TypeScript:** 12 módulos
 
 ---
 
