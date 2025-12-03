@@ -213,7 +213,7 @@
 
 ---
 
-## FASE 4 - Mobile App (React Native + Expo) ⏳
+## FASE 4 - Mobile App (React Native + Expo) ✅
 
 ### 4.1 Setup Base
 - [x] Criar app Expo (Expo 50 + Expo Router)
@@ -237,8 +237,8 @@
 - [x] Ranking
 
 ### 4.4 Telemedicina Mobile
-- [ ] Sala de videochamada
-- [ ] Notificações push
+- [x] Sala de videochamada (interface, controles, chat)
+- [x] Notificações push (Expo Notifications, canais Android)
 
 ---
 
@@ -277,17 +277,17 @@
 | FASE 1 - Foundation | ✅ Concluída | 100% |
 | FASE 2 - Backend API | ✅ Concluída | 100% |
 | FASE 3 - Frontend Web | ✅ Concluída | 100% |
-| FASE 4 - Mobile App | ⏳ Em Progresso | 85% |
+| FASE 4 - Mobile App | ✅ Concluída | 100% |
 | FASE 5 - Infrastructure | ⏳ Parcial | 10% |
 
 **Total de arquivos TypeScript na API:** 161+
-**Total de linhas de código estimadas:** 80.000+
+**Total de linhas de código estimadas:** 85.000+
 **Models Prisma:** 50+
 **Endpoints REST:** 300+
 **Componentes UI Web:** 55+
 **Páginas Frontend Web:** 30+
-**Telas Mobile:** 10+
-**Tipos TypeScript:** 12 módulos
+**Telas Mobile:** 15+
+**Tipos TypeScript:** 13 módulos
 
 ---
 
