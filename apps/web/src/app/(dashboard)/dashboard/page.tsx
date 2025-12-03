@@ -1,22 +1,85 @@
-import type { Metadata } from 'next';
+'use client';
+
+import * as React from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Users,
   Calendar,
   FileText,
   TrendingUp,
+  TrendingDown,
   Clock,
   Activity,
   DollarSign,
   UserPlus,
+  Stethoscope,
+  Video,
+  CheckCircle,
+  XCircle,
+  ArrowUpRight,
 } from 'lucide-react';
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
-export const metadata: Metadata = {
-  title: 'Dashboard',
-  description: 'Visao geral do sistema HealthFlow',
-};
+// Chart data
+const appointmentsWeekData = [
+  { name: 'Seg', agendados: 45, realizados: 40, cancelados: 5 },
+  { name: 'Ter', agendados: 52, realizados: 48, cancelados: 4 },
+  { name: 'Qua', agendados: 48, realizados: 45, cancelados: 3 },
+  { name: 'Qui', agendados: 58, realizados: 52, cancelados: 6 },
+  { name: 'Sex', agendados: 55, realizados: 50, cancelados: 5 },
+  { name: 'Sab', agendados: 25, realizados: 22, cancelados: 3 },
+  { name: 'Dom', agendados: 10, realizados: 8, cancelados: 2 },
+];
+
+const monthlyRevenueData = [
+  { name: 'Jan', receita: 45000, despesas: 32000 },
+  { name: 'Fev', receita: 52000, despesas: 35000 },
+  { name: 'Mar', receita: 48000, despesas: 30000 },
+  { name: 'Abr', receita: 61000, despesas: 38000 },
+  { name: 'Mai', receita: 55000, despesas: 36000 },
+  { name: 'Jun', receita: 67000, despesas: 40000 },
+];
+
+const specialtiesData = [
+  { name: 'Cardiologia', value: 25, color: '#3b82f6' },
+  { name: 'Dermatologia', value: 20, color: '#10b981' },
+  { name: 'Pediatria', value: 18, color: '#f59e0b' },
+  { name: 'Ortopedia', value: 15, color: '#ef4444' },
+  { name: 'Ginecologia', value: 12, color: '#8b5cf6' },
+  { name: 'Outros', value: 10, color: '#6b7280' },
+];
+
+const patientGrowthData = [
+  { name: 'Jan', pacientes: 120 },
+  { name: 'Fev', pacientes: 145 },
+  { name: 'Mar', pacientes: 170 },
+  { name: 'Abr', pacientes: 210 },
+  { name: 'Mai', pacientes: 250 },
+  { name: 'Jun', pacientes: 290 },
+];
 
 const stats = [
   {
@@ -28,79 +91,76 @@ const stats = [
   },
   {
     title: 'Consultas Hoje',
-    value: '24',
-    change: '+3',
+    value: '67',
+    change: '85% ocupacao',
     changeType: 'positive' as const,
     icon: Calendar,
   },
   {
     title: 'Receita Mensal',
-    value: 'R$ 45.231',
+    value: 'R$ 67.000',
     change: '+8%',
     changeType: 'positive' as const,
     icon: DollarSign,
   },
   {
-    title: 'Novos Pacientes',
-    value: '47',
-    change: 'este mes',
-    changeType: 'neutral' as const,
-    icon: UserPlus,
+    title: 'Telemedicina',
+    value: '156',
+    change: '+28%',
+    changeType: 'positive' as const,
+    icon: Video,
   },
 ];
 
 const recentAppointments = [
   {
-    id: 1,
+    id: '1',
     patient: 'Maria Silva',
-    doctor: 'Dr. Carlos Eduardo',
-    time: '08:00',
-    type: 'Consulta',
+    doctor: 'Dr. Carlos Santos',
+    specialty: 'Cardiologia',
+    time: '09:00',
     status: 'confirmed' as const,
   },
   {
-    id: 2,
-    patient: 'Joao Santos',
-    doctor: 'Dra. Ana Paula',
+    id: '2',
+    patient: 'Joao Costa',
+    doctor: 'Dra. Ana Lima',
+    specialty: 'Dermatologia',
     time: '09:30',
-    type: 'Retorno',
-    status: 'scheduled' as const,
+    status: 'waiting' as const,
   },
   {
-    id: 3,
-    patient: 'Ana Oliveira',
-    doctor: 'Dr. Roberto Lima',
+    id: '3',
+    patient: 'Pedro Oliveira',
+    doctor: 'Dr. Roberto Mendes',
+    specialty: 'Ortopedia',
     time: '10:00',
-    type: 'Telemedicina',
-    status: 'inProgress' as const,
-  },
-  {
-    id: 4,
-    patient: 'Pedro Costa',
-    doctor: 'Dra. Fernanda',
-    time: '11:30',
-    type: 'Exame',
     status: 'scheduled' as const,
   },
   {
-    id: 5,
+    id: '4',
     patient: 'Lucia Ferreira',
-    doctor: 'Dr. Carlos Eduardo',
-    time: '14:00',
-    type: 'Consulta',
-    status: 'scheduled' as const,
+    doctor: 'Dra. Patricia Souza',
+    specialty: 'Pediatria',
+    time: '10:30',
+    status: 'confirmed' as const,
+    isTelemedicine: true,
   },
 ];
 
 const statusBadgeMap = {
-  confirmed: { label: 'Confirmado', variant: 'success' as const },
-  scheduled: { label: 'Agendado', variant: 'info' as const },
-  inProgress: { label: 'Em Andamento', variant: 'warning' as const },
-  completed: { label: 'Concluido', variant: 'secondary' as const },
-  cancelled: { label: 'Cancelado', variant: 'destructive' as const },
+  confirmed: { label: 'Confirmado', className: 'bg-green-100 text-green-800' },
+  scheduled: { label: 'Agendado', className: 'bg-blue-100 text-blue-800' },
+  waiting: { label: 'Aguardando', className: 'bg-yellow-100 text-yellow-800' },
+  inProgress: { label: 'Em Andamento', className: 'bg-purple-100 text-purple-800' },
+  completed: { label: 'Concluido', className: 'bg-gray-100 text-gray-800' },
+  cancelled: { label: 'Cancelado', className: 'bg-red-100 text-red-800' },
 };
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const today = new Date();
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -108,12 +168,17 @@ export default function DashboardPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Dashboard</h1>
           <p className="text-muted-foreground">
-            Bem-vindo de volta! Aqui esta um resumo das atividades de hoje.
+            Visao geral do sistema - {format(today, "EEEE, dd 'de' MMMM", { locale: ptBR })}
           </p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Clock className="h-4 w-4" />
-          <span>Atualizado ha 5 minutos</span>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => router.push('/agenda')}>
+            <Calendar className="mr-2 h-4 w-4" />
+            Ver Agenda
+          </Button>
+          <Button onClick={() => router.push('/agenda/novo')}>
+            Novo Agendamento
+          </Button>
         </div>
       </div>
 
@@ -131,110 +196,310 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stat.value}</div>
-                <p
-                  className={`text-xs ${
-                    stat.changeType === 'positive'
-                      ? 'text-green-600 dark:text-green-400'
-                      : stat.changeType === 'negative'
-                      ? 'text-red-600 dark:text-red-400'
-                      : 'text-muted-foreground'
-                  }`}
-                >
-                  {stat.change}
-                  {stat.changeType !== 'neutral' && ' vs mes anterior'}
-                </p>
+                <div className="flex items-center gap-1 text-xs">
+                  {stat.changeType === 'positive' ? (
+                    <TrendingUp className="h-3 w-3 text-green-500" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3 text-red-500" />
+                  )}
+                  <span
+                    className={
+                      stat.changeType === 'positive'
+                        ? 'text-green-600'
+                        : 'text-red-600'
+                    }
+                  >
+                    {stat.change}
+                  </span>
+                  <span className="text-muted-foreground">vs mes anterior</span>
+                </div>
               </CardContent>
             </Card>
           );
         })}
       </div>
 
-      {/* Content Grid */}
+      {/* Charts Row 1 */}
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Recent Appointments */}
+        {/* Weekly Appointments Chart */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              Consultas de Hoje
-            </CardTitle>
+            <CardTitle>Agendamentos da Semana</CardTitle>
             <CardDescription>
-              Proximas consultas agendadas para hoje
+              Comparativo de agendamentos, realizacoes e cancelamentos
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {recentAppointments.map((appointment) => (
-                <div
-                  key={appointment.id}
-                  className="flex items-center justify-between rounded-lg border p-3"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                      <Clock className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{appointment.patient}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {appointment.doctor} - {appointment.type}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium">{appointment.time}</span>
-                    <Badge variant={statusBadgeMap[appointment.status].variant}>
-                      {statusBadgeMap[appointment.status].label}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={appointmentsWeekData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis dataKey="name" className="text-xs" tick={{ fontSize: 12 }} />
+                  <YAxis className="text-xs" tick={{ fontSize: 12 }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                    }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: '12px' }} />
+                  <Bar dataKey="agendados" fill="#3b82f6" name="Agendados" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="realizados" fill="#10b981" name="Realizados" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="cancelados" fill="#ef4444" name="Cancelados" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
 
-        {/* Activity Feed */}
+        {/* Specialties Distribution */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5" />
-              Atividade Recente
-            </CardTitle>
+            <CardTitle>Consultas por Especialidade</CardTitle>
             <CardDescription>
-              Ultimas acoes realizadas no sistema
+              Distribuicao de atendimentos este mes
             </CardDescription>
           </CardHeader>
           <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={specialtiesData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={2}
+                    dataKey="value"
+                    label={({ name, percent }) =>
+                      `${name} ${(percent * 100).toFixed(0)}%`
+                    }
+                    labelLine={false}
+                  >
+                    {specialtiesData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                    }}
+                    formatter={(value: number) => [`${value}%`, 'Porcentagem']}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Charts Row 2 */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Patient Growth */}
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Crescimento de Pacientes</CardTitle>
+            <CardDescription>
+              Evolucao do numero de pacientes cadastrados
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[250px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={patientGrowthData}>
+                  <defs>
+                    <linearGradient id="colorPacientes" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis dataKey="name" className="text-xs" tick={{ fontSize: 12 }} />
+                  <YAxis className="text-xs" tick={{ fontSize: 12 }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="pacientes"
+                    stroke="#3b82f6"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#colorPacientes)"
+                    name="Pacientes"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Today's Stats */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Resumo de Hoje</CardTitle>
+            <CardDescription>Estatisticas em tempo real</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
+                  <Calendar className="h-4 w-4 text-blue-600" />
+                </div>
+                <span className="text-sm">Agendados</span>
+              </div>
+              <span className="font-bold">67</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100">
+                  <Clock className="h-4 w-4 text-yellow-600" />
+                </div>
+                <span className="text-sm">Aguardando</span>
+              </div>
+              <span className="font-bold">8</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100">
+                  <Activity className="h-4 w-4 text-purple-600" />
+                </div>
+                <span className="text-sm">Em Atendimento</span>
+              </div>
+              <span className="font-bold">3</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                </div>
+                <span className="text-sm">Finalizados</span>
+              </div>
+              <span className="font-bold">42</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100">
+                  <XCircle className="h-4 w-4 text-red-600" />
+                </div>
+                <span className="text-sm">Cancelados</span>
+              </div>
+              <span className="font-bold">4</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Revenue Chart and Upcoming Appointments */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Monthly Revenue */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Receita Mensal</CardTitle>
+            <CardDescription>
+              Comparativo de receita e despesas
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={monthlyRevenueData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis dataKey="name" className="text-xs" tick={{ fontSize: 12 }} />
+                  <YAxis
+                    className="text-xs"
+                    tick={{ fontSize: 12 }}
+                    tickFormatter={(value) => `R$ ${(value / 1000).toFixed(0)}k`}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                    }}
+                    formatter={(value: number) => [
+                      `R$ ${value.toLocaleString('pt-BR')}`,
+                      '',
+                    ]}
+                  />
+                  <Legend wrapperStyle={{ fontSize: '12px' }} />
+                  <Line
+                    type="monotone"
+                    dataKey="receita"
+                    stroke="#10b981"
+                    strokeWidth={2}
+                    dot={{ fill: '#10b981' }}
+                    name="Receita"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="despesas"
+                    stroke="#ef4444"
+                    strokeWidth={2}
+                    dot={{ fill: '#ef4444' }}
+                    name="Despesas"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Upcoming Appointments */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Proximos Atendimentos</CardTitle>
+              <CardDescription>Agenda de hoje</CardDescription>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push('/agenda')}
+            >
+              Ver todos
+              <ArrowUpRight className="ml-1 h-4 w-4" />
+            </Button>
+          </CardHeader>
+          <CardContent>
             <div className="space-y-4">
-              <ActivityItem
-                title="Nova consulta agendada"
-                description="Maria Silva - Dr. Carlos Eduardo"
-                time="ha 5 min"
-                type="appointment"
-              />
-              <ActivityItem
-                title="Prescricao emitida"
-                description="Receituario #1234 - Joao Santos"
-                time="ha 15 min"
-                type="prescription"
-              />
-              <ActivityItem
-                title="Resultado de exame disponivel"
-                description="Hemograma completo - Ana Oliveira"
-                time="ha 30 min"
-                type="exam"
-              />
-              <ActivityItem
-                title="Novo paciente cadastrado"
-                description="Pedro Costa - CPF ***456***"
-                time="ha 1 hora"
-                type="patient"
-              />
-              <ActivityItem
-                title="Consulta finalizada"
-                description="Lucia Ferreira - Dra. Fernanda"
-                time="ha 2 horas"
-                type="completed"
-              />
+              {recentAppointments.map((apt) => (
+                <div
+                  key={apt.id}
+                  className="flex items-center justify-between rounded-lg border p-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="text-center">
+                      <div className="text-lg font-bold">{apt.time}</div>
+                    </div>
+                    <div>
+                      <p className="font-medium">{apt.patient}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {apt.doctor} - {apt.specialty}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {apt.isTelemedicine && (
+                      <Badge variant="outline">
+                        <Video className="mr-1 h-3 w-3" />
+                        Tele
+                      </Badge>
+                    )}
+                    <Badge className={statusBadgeMap[apt.status].className}>
+                      {statusBadgeMap[apt.status].label}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
@@ -261,10 +526,10 @@ export default function DashboardPage() {
               href="/pacientes/novo"
             />
             <QuickAction
-              icon={FileText}
-              title="Nova Prescricao"
-              description="Emitir receituario"
-              href="/prescricoes/nova"
+              icon={Stethoscope}
+              title="Medicos"
+              description="Ver profissionais"
+              href="/medicos"
             />
             <QuickAction
               icon={TrendingUp}
@@ -275,29 +540,6 @@ export default function DashboardPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
-}
-
-function ActivityItem({
-  title,
-  description,
-  time,
-  type,
-}: {
-  title: string;
-  description: string;
-  time: string;
-  type: string;
-}) {
-  return (
-    <div className="flex items-start gap-4">
-      <div className="mt-1 h-2 w-2 rounded-full bg-primary" />
-      <div className="flex-1">
-        <p className="font-medium">{title}</p>
-        <p className="text-sm text-muted-foreground">{description}</p>
-      </div>
-      <span className="text-xs text-muted-foreground">{time}</span>
     </div>
   );
 }
@@ -314,7 +556,7 @@ function QuickAction({
   href: string;
 }) {
   return (
-    <a
+    <Link
       href={href}
       className="flex items-center gap-4 rounded-lg border p-4 transition-colors hover:bg-accent"
     >
@@ -325,6 +567,6 @@ function QuickAction({
         <p className="font-medium">{title}</p>
         <p className="text-sm text-muted-foreground">{description}</p>
       </div>
-    </a>
+    </Link>
   );
 }
