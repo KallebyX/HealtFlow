@@ -1,0 +1,10 @@
+# ============================================================
+# HEALTHFLOW - NAMESPACE
+# ============================================================
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: healthflow
+  labels:
+    app.kubernetes.io/name: healthflow
+    app.kubernetes.io/managed-by: kubectl

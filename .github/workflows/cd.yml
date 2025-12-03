@@ -1,0 +1,281 @@
+# ============================================================
+# HEALTHFLOW - CD WORKFLOW
+# Deploys to staging/production on release
+# ============================================================
+
+name: CD
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '8'
+  REGISTRY: ghcr.io
+
+jobs:
+  # ============================================================
+  # Determine Environment
+  # ============================================================
+  setup:
+    name: Setup Deployment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment
+        id: set-env
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            echo "environment=production" >> $GITHUB_OUTPUT
+          else
+            echo "environment=staging" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set version
+        id: set-version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
+
+  # ============================================================
+  # Build Docker Images
+  # ============================================================
+  build:
+    name: Build Images
+    runs-on: ubuntu-latest
+    needs: setup
+    strategy:
+      matrix:
+        app: [api, web]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push ${{ matrix.app }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/${{ matrix.app }}/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.repository }}/healthflow-${{ matrix.app }}:${{ needs.setup.outputs.version }}
+            ${{ env.REGISTRY }}/${{ github.repository }}/healthflow-${{ matrix.app }}:${{ needs.setup.outputs.environment }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ needs.setup.outputs.environment == 'production' && secrets.PROD_API_URL || secrets.STAGING_API_URL }}
+            NEXT_PUBLIC_APP_URL=${{ needs.setup.outputs.environment == 'production' && secrets.PROD_APP_URL || secrets.STAGING_APP_URL }}
+
+  # ============================================================
+  # Run Database Migrations
+  # ============================================================
+  migrate:
+    name: Database Migration
+    runs-on: ubuntu-latest
+    needs: [setup, build]
+    environment: ${{ needs.setup.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run migrations
+        run: pnpm --filter @healthflow/database prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+  # ============================================================
+  # Deploy to Kubernetes
+  # ============================================================
+  deploy:
+    name: Deploy to ${{ needs.setup.outputs.environment }}
+    runs-on: ubuntu-latest
+    needs: [setup, build, migrate]
+    environment: ${{ needs.setup.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Set Kubernetes context
+        run: |
+          kubectl config use-context ${{ needs.setup.outputs.environment }}
+
+      - name: Update image tags
+        run: |
+          # Update API deployment
+          kubectl set image deployment/healthflow-api \
+            api=${{ env.REGISTRY }}/${{ github.repository }}/healthflow-api:${{ needs.setup.outputs.version }} \
+            -n healthflow-${{ needs.setup.outputs.environment }}
+
+          # Update Web deployment
+          kubectl set image deployment/healthflow-web \
+            web=${{ env.REGISTRY }}/${{ github.repository }}/healthflow-web:${{ needs.setup.outputs.version }} \
+            -n healthflow-${{ needs.setup.outputs.environment }}
+
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status deployment/healthflow-api -n healthflow-${{ needs.setup.outputs.environment }} --timeout=300s
+          kubectl rollout status deployment/healthflow-web -n healthflow-${{ needs.setup.outputs.environment }} --timeout=300s
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n healthflow-${{ needs.setup.outputs.environment }}
+          kubectl get services -n healthflow-${{ needs.setup.outputs.environment }}
+
+  # ============================================================
+  # Post-Deploy Health Check
+  # ============================================================
+  health-check:
+    name: Health Check
+    runs-on: ubuntu-latest
+    needs: [setup, deploy]
+    steps:
+      - name: Wait for services to stabilize
+        run: sleep 30
+
+      - name: Check API health
+        run: |
+          API_URL="${{ needs.setup.outputs.environment == 'production' && secrets.PROD_API_URL || secrets.STAGING_API_URL }}"
+          for i in {1..5}; do
+            response=$(curl -s -o /dev/null -w "%{http_code}" "$API_URL/health" || true)
+            if [ "$response" = "200" ]; then
+              echo "API health check passed"
+              exit 0
+            fi
+            echo "Attempt $i: API returned $response, retrying..."
+            sleep 10
+          done
+          echo "API health check failed"
+          exit 1
+
+      - name: Check Web health
+        run: |
+          APP_URL="${{ needs.setup.outputs.environment == 'production' && secrets.PROD_APP_URL || secrets.STAGING_APP_URL }}"
+          for i in {1..5}; do
+            response=$(curl -s -o /dev/null -w "%{http_code}" "$APP_URL/api/health" || true)
+            if [ "$response" = "200" ]; then
+              echo "Web health check passed"
+              exit 0
+            fi
+            echo "Attempt $i: Web returned $response, retrying..."
+            sleep 10
+          done
+          echo "Web health check failed"
+          exit 1
+
+  # ============================================================
+  # Notify on Success/Failure
+  # ============================================================
+  notify:
+    name: Notify
+    runs-on: ubuntu-latest
+    needs: [setup, deploy, health-check]
+    if: always()
+    steps:
+      - name: Send Slack notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: '#deployments'
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+          text: |
+            Deployment to ${{ needs.setup.outputs.environment }} ${{ needs.health-check.result == 'success' && 'succeeded' || 'failed' }}
+            Version: ${{ needs.setup.outputs.version }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
+
+  # ============================================================
+  # Rollback on Failure
+  # ============================================================
+  rollback:
+    name: Rollback
+    runs-on: ubuntu-latest
+    needs: [setup, deploy, health-check]
+    if: failure() && needs.deploy.result == 'success'
+    environment: ${{ needs.setup.outputs.environment }}
+    steps:
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Rollback deployments
+        run: |
+          kubectl rollout undo deployment/healthflow-api -n healthflow-${{ needs.setup.outputs.environment }}
+          kubectl rollout undo deployment/healthflow-web -n healthflow-${{ needs.setup.outputs.environment }}
+
+      - name: Wait for rollback
+        run: |
+          kubectl rollout status deployment/healthflow-api -n healthflow-${{ needs.setup.outputs.environment }} --timeout=300s
+          kubectl rollout status deployment/healthflow-web -n healthflow-${{ needs.setup.outputs.environment }} --timeout=300s
+
+      - name: Notify rollback
+        uses: 8398a7/action-slack@v3
+        with:
+          status: 'warning'
+          channel: '#deployments'
+          text: 'Deployment rolled back due to health check failure'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

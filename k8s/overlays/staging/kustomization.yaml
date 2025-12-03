@@ -1,0 +1,75 @@
+# ============================================================
+# HEALTHFLOW - STAGING OVERLAY
+# ============================================================
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: healthflow-staging
+
+resources:
+  - ../../base
+
+nameSuffix: -staging
+
+patches:
+  # Reduce replicas for staging
+  - target:
+      kind: Deployment
+      name: healthflow-api
+    patch: |
+      - op: replace
+        path: /spec/replicas
+        value: 1
+  - target:
+      kind: Deployment
+      name: healthflow-web
+    patch: |
+      - op: replace
+        path: /spec/replicas
+        value: 1
+  # Reduce HPA for staging
+  - target:
+      kind: HorizontalPodAutoscaler
+      name: healthflow-api-hpa
+    patch: |
+      - op: replace
+        path: /spec/minReplicas
+        value: 1
+      - op: replace
+        path: /spec/maxReplicas
+        value: 3
+  - target:
+      kind: HorizontalPodAutoscaler
+      name: healthflow-web-hpa
+    patch: |
+      - op: replace
+        path: /spec/minReplicas
+        value: 1
+      - op: replace
+        path: /spec/maxReplicas
+        value: 2
+  # Update ingress hosts for staging
+  - target:
+      kind: Ingress
+      name: healthflow-ingress
+    patch: |
+      - op: replace
+        path: /spec/rules/0/host
+        value: staging.app.healthflow.com
+      - op: replace
+        path: /spec/rules/1/host
+        value: staging.api.healthflow.com
+      - op: replace
+        path: /spec/tls/0/hosts
+        value:
+          - staging.app.healthflow.com
+          - staging.api.healthflow.com
+
+commonLabels:
+  environment: staging
+
+images:
+  - name: ghcr.io/healthflow/healthflow-api
+    newTag: staging
+  - name: ghcr.io/healthflow/healthflow-web
+    newTag: staging

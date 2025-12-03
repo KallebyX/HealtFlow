@@ -1,0 +1,107 @@
+# ============================================================
+# HEALTHFLOW - SERVICES
+# ============================================================
+
+# API Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthflow-api
+  namespace: healthflow
+  labels:
+    app.kubernetes.io/name: healthflow
+    app.kubernetes.io/component: api
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 3001
+      targetPort: http
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: healthflow
+    app.kubernetes.io/component: api
+---
+# Web Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthflow-web
+  namespace: healthflow
+  labels:
+    app.kubernetes.io/name: healthflow
+    app.kubernetes.io/component: web
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 3000
+      targetPort: http
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: healthflow
+    app.kubernetes.io/component: web
+---
+# PostgreSQL Service (for StatefulSet)
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: healthflow
+  labels:
+    app.kubernetes.io/name: healthflow
+    app.kubernetes.io/component: postgres
+spec:
+  type: ClusterIP
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: healthflow
+    app.kubernetes.io/component: postgres
+---
+# Redis Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: healthflow
+  labels:
+    app.kubernetes.io/name: healthflow
+    app.kubernetes.io/component: redis
+spec:
+  type: ClusterIP
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: 6379
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: healthflow
+    app.kubernetes.io/component: redis
+---
+# MinIO Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+  namespace: healthflow
+  labels:
+    app.kubernetes.io/name: healthflow
+    app.kubernetes.io/component: minio
+spec:
+  type: ClusterIP
+  ports:
+    - name: api
+      port: 9000
+      targetPort: 9000
+      protocol: TCP
+    - name: console
+      port: 9001
+      targetPort: 9001
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: healthflow
+    app.kubernetes.io/component: minio
