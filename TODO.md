@@ -188,20 +188,23 @@
 - [x] Overview com métricas
 - [x] Gráficos e estatísticas (Recharts)
 - [x] Atividades recentes
-- [ ] Alertas e notificações
+- [x] Alertas e notificações (dropdown + página completa)
 
 ### 3.5 Módulos de Gestão
 - [x] Lista e form de pacientes
 - [x] Lista e form de médicos
 - [x] Agenda de consultas (day/week/list views)
-- [ ] Prontuário eletrônico
+- [x] Prontuário eletrônico (SOAP notes, sinais vitais, diagnósticos)
 - [x] Prescrições (lista, detalhes, nova prescricao)
 - [x] Exames laboratoriais (lista, detalhes)
 
 ### 3.6 Telemedicina
-- [ ] Sala de videochamada
-- [ ] Chat durante consulta
-- [ ] Compartilhamento de tela
+- [x] Sala de videochamada (WebRTC)
+- [x] Chat durante consulta
+- [x] Compartilhamento de tela
+- [x] Sala de espera virtual
+- [x] Controles de áudio/vídeo
+- [x] Painel de anotações
 
 ### 3.7 Financeiro
 - [ ] Dashboard financeiro
@@ -272,15 +275,16 @@
 |------|--------|-----------|
 | FASE 1 - Foundation | ✅ Concluída | 100% |
 | FASE 2 - Backend API | ✅ Concluída | 100% |
-| FASE 3 - Frontend Web | ⏳ Em Progresso | 80% |
+| FASE 3 - Frontend Web | ⏳ Em Progresso | 92% |
 | FASE 4 - Mobile App | ⏳ Pendente | 0% |
 | FASE 5 - Infrastructure | ⏳ Parcial | 10% |
 
 **Total de arquivos TypeScript na API:** 161+
-**Total de linhas de código estimadas:** 65.000+
+**Total de linhas de código estimadas:** 70.000+
 **Models Prisma:** 50+
 **Endpoints REST:** 300+
-**Componentes UI:** 35+
+**Componentes UI:** 50+
+**Páginas Frontend:** 25+
 
 ---
 
