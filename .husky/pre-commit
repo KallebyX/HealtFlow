@@ -1,0 +1,40 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# ═══════════════════════════════════════════════════════════════════════════
+# HEALTHFLOW - Pre-commit Hook
+# ═══════════════════════════════════════════════════════════════════════════
+
+echo "🔍 Running pre-commit checks..."
+
+# Run lint-staged for incremental linting
+npx lint-staged
+
+# Run type checking on staged files
+echo "📝 Running type check..."
+npm run type-check
+
+# Check for debug statements
+echo "🔎 Checking for debug statements..."
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx|js|jsx)$')
+
+if [ -n "$STAGED_FILES" ]; then
+  # Check for console.log statements (excluding console.error, console.warn)
+  if grep -n "console\.log" $STAGED_FILES 2>/dev/null; then
+    echo "⚠️  Warning: console.log statements found. Consider removing them."
+  fi
+
+  # Check for debugger statements
+  if grep -n "debugger" $STAGED_FILES 2>/dev/null; then
+    echo "❌ Error: debugger statements found. Please remove them."
+    exit 1
+  fi
+fi
+
+# Check for sensitive data patterns
+echo "🔐 Checking for sensitive data..."
+if git diff --cached --diff-filter=ACM | grep -E "(password|secret|api_key|apikey|private_key).*=.*['\"][^'\"]+['\"]" -i 2>/dev/null; then
+  echo "⚠️  Warning: Possible sensitive data found. Please review before committing."
+fi
+
+echo "✅ Pre-commit checks passed!"
