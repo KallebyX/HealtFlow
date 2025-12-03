@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# ═══════════════════════════════════════════════════════════════════════════
+# HEALTHFLOW - Pre-push Hook
+# ═══════════════════════════════════════════════════════════════════════════
+
+echo "🚀 Running pre-push checks..."
+
+# Get the current branch
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Protect main/master branches from direct pushes
+if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
+  echo "❌ Direct pushes to $BRANCH are not allowed!"
+  echo "Please create a feature branch and submit a pull request."
+  exit 1
+fi
+
+# Run tests before pushing
+echo "🧪 Running tests..."
+npm run test --if-present
+
+# Run build to ensure everything compiles
+echo "🔨 Running build check..."
+npm run build --if-present
+
+echo "✅ Pre-push checks passed!"

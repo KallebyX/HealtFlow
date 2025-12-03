@@ -56,6 +56,7 @@ async function bootstrap() {
       .addTag('auth', 'Autenticação e autorização')
       .addTag('patients', 'Gestão de pacientes')
       .addTag('doctors', 'Gestão de médicos')
+      .addTag('clinics', 'Gestão de clínicas')
       .addTag('appointments', 'Agendamento de consultas')
       .addTag('consultations', 'Consultas médicas (SOAP)')
       .addTag('prescriptions', 'Prescrições digitais')
@@ -65,6 +66,9 @@ async function bootstrap() {
       .addTag('billing', 'Faturamento')
       .addTag('notifications', 'Notificações')
       .addTag('analytics', 'Analytics e relatórios')
+      .addTag('fhir', 'Integração FHIR R4')
+      .addTag('rnds', 'Integração RNDS (DATASUS)')
+      .addTag('storage', 'Gerenciamento de arquivos')
       .build();
 
     const document = SwaggerModule.createDocument(app, swaggerConfig);

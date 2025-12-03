@@ -19,14 +19,41 @@ datasource db {
 // ═══════════════════════════════════════════════════════════════════════════
 
 enum UserRole {
+  // System Administration
   SUPER_ADMIN
+  ADMIN
+
+  // Clinic Administration
   CLINIC_ADMIN
+  CLINIC_MANAGER
+
+  // Healthcare Professionals
   DOCTOR
   NURSE
-  RECEPTIONIST
-  PATIENT
   PHARMACIST
+  PHYSIOTHERAPIST
+  PSYCHOLOGIST
+  NUTRITIONIST
+  DENTIST
+
+  // Laboratory
   LAB_TECHNICIAN
+  LAB_MANAGER
+
+  // Administrative Staff
+  RECEPTIONIST
+  BILLING_CLERK
+  SECRETARY
+
+  // Patients
+  PATIENT
+
+  // External
+  INSURANCE_AGENT
+  SUPPLIER
+
+  // Guest/Limited
+  GUEST
 }
 
 enum UserStatus {
@@ -258,6 +285,10 @@ model User {
   notifications            Notification[]
   auditLogs                AuditLog[]     @relation("UserAuditLogs")
   performedAudits          AuditLog[]     @relation("PerformedAuditLogs")
+
+  // Storage Relations
+  uploadedFiles            StorageFile[]  @relation("UploadedFiles")
+  deletedFiles             StorageFile[]  @relation("DeletedFiles")
 
   @@index([email])
   @@index([status])
@@ -653,6 +684,13 @@ model Clinic {
   analyticsSnapshots   AnalyticsSnapshot[]
   fhirResources        FhirResource[]
   telemedicineSessions TelemedicineSession[]
+
+  // Storage Relations
+  storageFiles         StorageFile[]
+
+  // RNDS Relations
+  rndsSyncStatus       RndsSyncStatus[]
+  rndsCredential       RndsCredential?
 
   @@index([cnpj])
   @@index([cnes])
@@ -1544,4 +1582,238 @@ model AnalyticsSnapshot {
 
   @@unique([clinicId, type, date])
   @@map("analytics_snapshots")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STORAGE MODULE
+// ═══════════════════════════════════════════════════════════════════════════
+
+model StorageFile {
+  id             String             @id @default(uuid())
+  path           String             @unique
+  originalName   String
+  mimeType       String
+  size           Int
+  checksum       String
+  category       StorageFileCategory
+  accessLevel    StorageAccessLevel @default(PRIVATE)
+  status         StorageFileStatus  @default(UPLOADED)
+
+  // Versioning
+  versionId      String?
+  isLatestVersion Boolean           @default(true)
+
+  // Entity Reference
+  entityType     String?
+  entityId       String?
+
+  // Clinic Reference
+  clinicId       String?
+  clinic         Clinic?            @relation(fields: [clinicId], references: [id])
+
+  // Uploader
+  uploadedById   String?
+  uploadedBy     User?              @relation("UploadedFiles", fields: [uploadedById], references: [id])
+
+  // Deletion
+  deletedAt      DateTime?
+  deletedById    String?
+  deletedBy      User?              @relation("DeletedFiles", fields: [deletedById], references: [id])
+
+  // Metadata
+  metadata       Json               @default("{}")
+  tags           String[]           @default([])
+  description    String?
+
+  // Expiration
+  expiresAt      DateTime?
+
+  // Timestamps
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@index([path])
+  @@index([checksum])
+  @@index([entityType, entityId])
+  @@index([clinicId])
+  @@index([uploadedById])
+  @@index([status])
+  @@index([category])
+  @@map("storage_files")
+}
+
+model StorageLifecycleRule {
+  id                          String   @id @default(uuid())
+  prefix                      String
+  transitionToArchiveDays     Int?
+  expirationDays              Int?
+  abortIncompleteMultipartDays Int?
+  noncurrentVersionsToKeep    Int?
+  enabled                     Boolean  @default(true)
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+
+  @@map("storage_lifecycle_rules")
+}
+
+enum StorageFileCategory {
+  MEDICAL_RECORD
+  PRESCRIPTION
+  LAB_RESULT
+  MEDICAL_IMAGE
+  EXAM_REPORT
+  CLINICAL_SUMMARY
+  REFERRAL_LETTER
+  CONSENT_FORM
+  MEDICAL_CERTIFICATE
+  IDENTITY_DOCUMENT
+  INSURANCE_CARD
+  PROFILE_PHOTO
+  SIGNATURE
+  INVOICE
+  RECEIPT
+  CONTRACT
+  REPORT
+  ATTACHMENT
+  TELEMEDICINE_RECORDING
+  OTHER
+}
+
+enum StorageAccessLevel {
+  PUBLIC
+  PRIVATE
+  PROTECTED
+  RESTRICTED
+}
+
+enum StorageFileStatus {
+  PENDING
+  UPLOADING
+  UPLOADED
+  PROCESSING
+  PROCESSED
+  FAILED
+  DELETED
+  ARCHIVED
+  QUARANTINED
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RNDS INTEGRATION (Rede Nacional de Dados em Saúde)
+// ═══════════════════════════════════════════════════════════════════════════
+
+model RndsSyncStatus {
+  id             String             @id @default(uuid())
+
+  // Document Reference
+  documentType   RndsDocumentType
+  localType      String
+  localId        String
+
+  // Clinic Reference
+  clinicId       String
+  clinic         Clinic             @relation(fields: [clinicId], references: [id])
+
+  // RNDS Reference
+  rndsId         String?
+  protocol       String?
+
+  // Sync Status
+  status         RndsSyncStatusEnum @default(PENDING)
+  attemptCount   Int                @default(0)
+  lastAttempt    DateTime?
+  lastError      String?
+  errorDetails   Json?
+
+  // Bundle Data
+  fhirBundle     Json?
+
+  // Timestamps
+  syncedAt       DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@unique([localType, localId, documentType])
+  @@index([clinicId])
+  @@index([status])
+  @@index([documentType])
+  @@map("rnds_sync_status")
+}
+
+model RndsCredential {
+  id                String           @id @default(uuid())
+  clinicId          String           @unique
+  clinic            Clinic           @relation(fields: [clinicId], references: [id])
+
+  environment       RndsEnvironment  @default(HOMOLOGATION)
+  cnes              String
+  cnsProfissional   String
+
+  // Certificate (encrypted)
+  certificatePath   String?
+  certificateHash   String?
+
+  // OAuth Token (encrypted, cached)
+  accessToken       String?
+  tokenExpiresAt    DateTime?
+
+  // Status
+  isActive          Boolean          @default(true)
+  lastAuthAt        DateTime?
+  lastAuthError     String?
+
+  // Timestamps
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@map("rnds_credentials")
+}
+
+model RndsAuditLog {
+  id             String   @id @default(uuid())
+  clinicId       String
+  userId         String?
+
+  action         String
+  documentType   String?
+  localId        String?
+  rndsId         String?
+
+  requestData    Json?
+  responseData   Json?
+  statusCode     Int?
+  errorMessage   String?
+
+  ipAddress      String?
+  userAgent      String?
+
+  createdAt      DateTime @default(now())
+
+  @@index([clinicId])
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("rnds_audit_logs")
+}
+
+enum RndsDocumentType {
+  RESULTADO_EXAME_LABORATORIAL
+  SUMARIO_ALTA
+  ATESTADO_DIGITAL
+  REGISTRO_IMUNOBIOLOGICO
+  REGISTRO_ATENDIMENTO
+  DISPENSACAO_MEDICAMENTO
+}
+
+enum RndsSyncStatusEnum {
+  PENDING
+  SYNCING
+  SYNCED
+  FAILED
+  RETRYING
+}
+
+enum RndsEnvironment {
+  HOMOLOGATION
+  PRODUCTION
 }

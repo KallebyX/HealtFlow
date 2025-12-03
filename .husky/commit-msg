@@ -1,0 +1,68 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# ═══════════════════════════════════════════════════════════════════════════
+# HEALTHFLOW - Commit Message Hook
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Conventional Commits validation
+# https://www.conventionalcommits.org/
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Pattern for conventional commits
+# type(scope): description
+# Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .{1,100}$"
+
+# Also allow merge commits and WIP commits
+MERGE_PATTERN="^Merge "
+WIP_PATTERN="^WIP:"
+INITIAL_PATTERN="^Initial commit$"
+
+# Check if commit message matches any valid pattern
+if echo "$COMMIT_MSG" | grep -qE "$PATTERN"; then
+  exit 0
+fi
+
+if echo "$COMMIT_MSG" | grep -qE "$MERGE_PATTERN"; then
+  exit 0
+fi
+
+if echo "$COMMIT_MSG" | grep -qE "$WIP_PATTERN"; then
+  exit 0
+fi
+
+if echo "$COMMIT_MSG" | grep -qE "$INITIAL_PATTERN"; then
+  exit 0
+fi
+
+echo "❌ Invalid commit message format!"
+echo ""
+echo "Your commit message:"
+echo "  $COMMIT_MSG"
+echo ""
+echo "Expected format (Conventional Commits):"
+echo "  <type>(<scope>): <description>"
+echo ""
+echo "Types:"
+echo "  feat     - A new feature"
+echo "  fix      - A bug fix"
+echo "  docs     - Documentation only changes"
+echo "  style    - Code style changes (formatting, etc)"
+echo "  refactor - Code refactoring"
+echo "  perf     - Performance improvements"
+echo "  test     - Adding or updating tests"
+echo "  build    - Build system changes"
+echo "  ci       - CI configuration changes"
+echo "  chore    - Other changes (dependencies, etc)"
+echo "  revert   - Reverting a previous commit"
+echo ""
+echo "Examples:"
+echo "  feat(auth): add two-factor authentication"
+echo "  fix(api): resolve database connection timeout"
+echo "  docs: update API documentation"
+echo ""
+
+exit 1
