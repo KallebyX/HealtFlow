@@ -1,0 +1,41 @@
+# ============================================================
+# HEALTHFLOW - CONFIGMAP
+# Non-sensitive configuration
+# ============================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: healthflow-config
+  namespace: healthflow
+  labels:
+    app.kubernetes.io/name: healthflow
+data:
+  # API Configuration
+  NODE_ENV: "production"
+  API_PORT: "3001"
+  WEB_PORT: "3000"
+
+  # Database
+  POSTGRES_HOST: "postgres"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "healthflow"
+
+  # Redis
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+
+  # MinIO
+  MINIO_ENDPOINT: "minio"
+  MINIO_PORT: "9000"
+  MINIO_USE_SSL: "false"
+
+  # Logging
+  LOG_LEVEL: "info"
+  LOG_FORMAT: "json"
+
+  # CORS
+  CORS_ORIGINS: "https://app.healthflow.com,https://admin.healthflow.com"
+
+  # Rate Limiting
+  THROTTLE_TTL: "60"
+  THROTTLE_LIMIT: "100"

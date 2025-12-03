@@ -1,0 +1,29 @@
+# ============================================================
+# HEALTHFLOW - KUSTOMIZATION BASE
+# ============================================================
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: healthflow
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secret.yaml
+  - postgres.yaml
+  - redis.yaml
+  - api-deployment.yaml
+  - web-deployment.yaml
+  - services.yaml
+  - ingress.yaml
+  - hpa.yaml
+
+commonLabels:
+  app.kubernetes.io/part-of: healthflow
+  app.kubernetes.io/managed-by: kustomize
+
+images:
+  - name: ghcr.io/healthflow/healthflow-api
+    newTag: latest
+  - name: ghcr.io/healthflow/healthflow-web
+    newTag: latest
