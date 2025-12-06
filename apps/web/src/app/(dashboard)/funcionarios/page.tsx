@@ -11,8 +11,6 @@ import {
   Eye,
   Pencil,
   Trash2,
-  Phone,
-  Mail,
   Shield,
   Building2,
 } from 'lucide-react';
@@ -52,7 +50,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
 import { DataTable } from '@/components/data-table/data-table';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -67,7 +64,6 @@ import { getInitials, formatDate } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export default function FuncionariosPage() {
-  const router = useRouter();
   const [selectedClinicId, setSelectedClinicId] = React.useState<string>('all');
   const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
 
@@ -78,7 +74,7 @@ export default function FuncionariosPage() {
   });
 
   // Fetch employees from selected clinic
-  const { data: employees, isLoading, refetch } = useQuery({
+  const { data: employees, isLoading } = useQuery({
     queryKey: ['employees', selectedClinicId],
     queryFn: async () => {
       if (selectedClinicId === 'all') {

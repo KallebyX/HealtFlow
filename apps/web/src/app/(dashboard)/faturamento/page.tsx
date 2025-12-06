@@ -2,29 +2,22 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
 import {
   CreditCard,
   DollarSign,
   TrendingUp,
-  TrendingDown,
   Receipt,
-  FileText,
   Clock,
   CheckCircle,
-  XCircle,
   AlertTriangle,
   Plus,
   Download,
-  Filter,
   Calendar,
   Building2,
 } from 'lucide-react';
 import {
   LineChart,
   Line,
-  BarChart,
-  Bar,
   PieChart,
   Pie,
   Cell,
@@ -35,8 +28,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { format, subMonths } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { format } from 'date-fns';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -54,10 +46,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { financialApi } from '@/lib/api/financial';
 
 // Mock data for charts
 const revenueData = [

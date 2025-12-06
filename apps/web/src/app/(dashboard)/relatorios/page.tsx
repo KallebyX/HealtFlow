@@ -2,22 +2,14 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
 import {
-  BarChart3,
-  FileText,
   Download,
-  Calendar,
   Users,
-  Stethoscope,
   DollarSign,
   TrendingUp,
   Clock,
   Activity,
-  PieChart,
-  LineChart as LineChartIcon,
   Filter,
-  RefreshCw,
 } from 'lucide-react';
 import {
   LineChart,
@@ -36,11 +28,9 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { format, subDays, subMonths } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { format, subMonths } from 'date-fns';
 
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
@@ -58,9 +48,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { reportsApi } from '@/lib/api/reports';
 
 // Mock data
 const appointmentsBySpecialty = [
@@ -107,7 +95,6 @@ const patientDemographics = [
 ];
 
 export default function RelatoriosPage() {
-  const router = useRouter();
   const [dateFrom, setDateFrom] = React.useState(
     format(subMonths(new Date(), 1), 'yyyy-MM-dd')
   );
