@@ -2,15 +2,11 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
 import {
-  TestTubes,
   FileText,
   Clock,
   CheckCircle,
   AlertTriangle,
-  Plus,
-  Filter,
   RefreshCw,
   Search,
   Download,
@@ -39,10 +35,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { laboratoryApi } from '@/lib/api/laboratory';
 import {
   LabOrderStatus,
   LabPriority,

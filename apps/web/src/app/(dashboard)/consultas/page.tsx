@@ -9,7 +9,6 @@ import {
   Clock,
   User,
   Stethoscope,
-  Calendar,
   MoreHorizontal,
   Eye,
   Play,

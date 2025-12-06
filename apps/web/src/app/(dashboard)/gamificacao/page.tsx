@@ -2,20 +2,13 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
 import {
   Trophy,
   Medal,
-  Star,
   Target,
   Gift,
   Zap,
-  Crown,
-  Users,
-  TrendingUp,
-  Award,
   Flame,
-  Calendar,
   CheckCircle,
   Lock,
 } from 'lucide-react';
@@ -32,18 +25,13 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { gamificationApi } from '@/lib/api/gamification';
 import {
   LEVELS,
-  getLevelFromPoints,
   getBadgeTierColor,
   getBadgeTierLabel,
-  getBadgeCategoryLabel,
   getRewardTypeLabel,
   getChallengeTypeLabel,
-  getChallengeStatusLabel,
 } from '@/types/gamification';
 import { getInitials } from '@/lib/utils';
 
@@ -100,7 +88,6 @@ const mockLeaderboard = [
 ];
 
 export default function GamificacaoPage() {
-  const router = useRouter();
   const stats = mockStats;
   const currentLevel = LEVELS.find(l => l.level === stats.level) || LEVELS[2];
   const nextLevel = LEVELS[stats.level] || LEVELS[4];

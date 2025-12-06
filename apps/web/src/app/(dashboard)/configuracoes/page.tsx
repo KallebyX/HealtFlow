@@ -3,22 +3,16 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Settings,
-  User,
   Bell,
-  Shield,
-  Palette,
   Globe,
   CreditCard,
   Building2,
   Key,
   Smartphone,
   Mail,
-  Lock,
   Eye,
   EyeOff,
   Save,
-  RefreshCw,
   LogOut,
 } from 'lucide-react';
 import { toast } from 'sonner';

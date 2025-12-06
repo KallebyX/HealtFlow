@@ -3,25 +3,18 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
 import {
   Users,
   Calendar,
   FileText,
-  TrendingUp,
   Clock,
-  Activity,
   Stethoscope,
   Video,
-  CheckCircle,
-  XCircle,
   ArrowUpRight,
   AlertTriangle,
-  ClipboardList,
   Pill,
   TestTubes,
   Star,
-  Award,
   Play,
   Bell,
   UserCheck,
@@ -49,7 +42,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getInitials } from '@/lib/utils';
 
@@ -255,7 +247,6 @@ const taskTypeIcons = {
 export default function DoctorDashboardPage() {
   const router = useRouter();
   const today = new Date();
-  const [currentPatient, setCurrentPatient] = React.useState<string | null>(null);
 
   // Calculate progress
   const consultationProgress = Math.round(

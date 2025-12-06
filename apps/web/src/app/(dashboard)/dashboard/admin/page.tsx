@@ -3,7 +3,6 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
 import {
   Users,
   Calendar,
@@ -11,13 +10,10 @@ import {
   TrendingUp,
   TrendingDown,
   Clock,
-  Activity,
   DollarSign,
   UserPlus,
   Stethoscope,
   Video,
-  CheckCircle,
-  XCircle,
   ArrowUpRight,
   Building2,
   UserCog,
@@ -25,19 +21,12 @@ import {
   Settings,
   AlertTriangle,
   Target,
-  Percent,
-  CreditCard,
-  Receipt,
-  PieChart,
   BarChart3,
-  Briefcase,
   HeartPulse,
 } from 'lucide-react';
 import {
   LineChart,
   Line,
-  AreaChart,
-  Area,
   BarChart,
   Bar,
   PieChart as RechartsPieChart,
@@ -54,11 +43,9 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getInitials } from '@/lib/utils';
 

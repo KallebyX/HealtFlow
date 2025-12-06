@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
 import {
   Pill,
   QrCode,
@@ -12,9 +11,6 @@ import {
   AlertTriangle,
   Package,
   Shield,
-  Search,
-  Filter,
-  RefreshCw,
   Eye,
   Download,
   Scan,
@@ -32,13 +28,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -49,9 +38,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { pharmacyApi } from '@/lib/api/pharmacy';
 import {
   DispensationStatus,
   DispensationType,
