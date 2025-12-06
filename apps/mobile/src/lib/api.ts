@@ -198,3 +198,40 @@ export const notificationsApi = {
   markAsRead: (id: string) => api.patch<unknown>(`/notifications/${id}/read`, {}),
   markAllAsRead: () => api.post<unknown>('/notifications/read-all', {}),
 };
+
+// Health Monitoring API
+export const healthApi = {
+  getMetrics: (type?: string) => {
+    const query = type ? `?type=${type}` : '';
+    return api.get<unknown>(`/health/metrics${query}`);
+  },
+  getStats: () => api.get<unknown>('/health/stats'),
+  addMetric: (data: {
+    type: string;
+    value: number;
+    secondaryValue?: number;
+    measuredAt: string;
+    notes?: string;
+  }) => api.post<unknown>('/health/metrics', data),
+  getHistory: (type: string, startDate?: string, endDate?: string) => {
+    const params = new URLSearchParams({ type });
+    if (startDate) params.set('startDate', startDate);
+    if (endDate) params.set('endDate', endDate);
+    return api.get<unknown>(`/health/history?${params.toString()}`);
+  },
+};
+
+// Telemedicine API
+export const telemedicineApi = {
+  getSession: (appointmentId: string) => api.get<unknown>(`/telemedicine/session/${appointmentId}`),
+  joinSession: (appointmentId: string) => api.post<unknown>(`/telemedicine/session/${appointmentId}/join`, {}),
+  leaveSession: (appointmentId: string) => api.post<unknown>(`/telemedicine/session/${appointmentId}/leave`, {}),
+  getToken: (appointmentId: string) => api.get<unknown>(`/telemedicine/token/${appointmentId}`),
+};
+
+// Settings API
+export const settingsApi = {
+  getPreferences: () => api.get<unknown>('/settings/preferences'),
+  updatePreferences: (data: Record<string, unknown>) => api.patch<unknown>('/settings/preferences', data),
+  updateNotificationSettings: (data: Record<string, boolean>) => api.patch<unknown>('/settings/notifications', data),
+};

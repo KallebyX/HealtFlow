@@ -171,7 +171,7 @@ export default function HomeScreen() {
 
       {/* Quick Actions */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Acesso Rápido</Text>
+        <Text style={styles.sectionTitle}>Acesso Rapido</Text>
         <View style={styles.quickActions}>
           <TouchableOpacity
             style={styles.quickAction}
@@ -189,10 +189,24 @@ export default function HomeScreen() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.quickAction}
-            onPress={() => router.push('/(tabs)/appointments')}
+            onPress={() => router.push('/health')}
+          >
+            <Text style={styles.quickActionIcon}>❤️</Text>
+            <Text style={styles.quickActionLabel}>Minha Saude</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.quickAction}
+            onPress={() => router.push('/telemedicine')}
           >
             <Text style={styles.quickActionIcon}>📹</Text>
             <Text style={styles.quickActionLabel}>Telemedicina</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.quickAction}
+            onPress={() => router.push('/notifications')}
+          >
+            <Text style={styles.quickActionIcon}>🔔</Text>
+            <Text style={styles.quickActionLabel}>Notificacoes</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.quickAction}
@@ -423,12 +437,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 12,
+    justifyContent: 'space-between',
   },
   quickAction: {
-    width: '47%',
+    width: '30%',
     backgroundColor: '#fff',
     borderRadius: 16,
-    padding: 16,
+    padding: 12,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
