@@ -260,15 +260,19 @@ export default function ProfileScreen() {
 
       {/* Actions */}
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.actionButton} onPress={() => {}}>
-          <Text style={styles.actionIcon}>⚙️</Text>
-          <Text style={styles.actionText}>Configurações</Text>
+        <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/health')}>
+          <Text style={styles.actionIcon}>❤️</Text>
+          <Text style={styles.actionText}>Monitoramento de Saude</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton} onPress={() => {}}>
+        <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/notifications')}>
           <Text style={styles.actionIcon}>🔔</Text>
-          <Text style={styles.actionText}>Notificações</Text>
+          <Text style={styles.actionText}>Notificacoes</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton} onPress={() => {}}>
+        <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/settings')}>
+          <Text style={styles.actionIcon}>⚙️</Text>
+          <Text style={styles.actionText}>Configuracoes</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionButton} onPress={() => Alert.alert('Ajuda', 'Para suporte, entre em contato pelo email suporte@healthflow.com')}>
           <Text style={styles.actionIcon}>❓</Text>
           <Text style={styles.actionText}>Ajuda</Text>
         </TouchableOpacity>
